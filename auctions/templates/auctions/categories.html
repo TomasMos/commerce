@@ -1,0 +1,43 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    {% if not cat %}
+    <h2>Available Categories</h2>
+    <div class="row">
+        {% for cat in categories %}
+        <form action="{% url 'categories' %}" method="POST" id="categ">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="hidden" value="{{cat}}" name="cat">
+                <button type="submit" class="btn btn-primary">{{cat}}</button>
+            </div>
+        </form>
+        {% endfor %}
+    </div>
+    {% else %}
+
+    <h2>Listings in {{cat}} category</h2>
+    <div class="row">
+    {% for list in listings %}
+        <div class="card" style="width: 28rem; margin: 20px">
+            <div class="img">
+              <img class="card-img img-fluid" src="{{list.image}}" alt="Card image cap" id="img">
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{list.title}}</h5>
+              <p class="card-text">{{list.description}}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">$ {{list.price}}</li>
+              <li class="list-group-item">{{list.category}}</li>
+            </ul>
+            <div class="card-body">
+              <a href="#" class="card-link">Card link</a>
+              <a href="#" class="card-link">Another link</a>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+{% endblock %}

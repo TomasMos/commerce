@@ -1,0 +1,114 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% if not list.active and user == list.price.owner %}
+<div class="alert alert-success" role="alert">
+  Your bid was the highest bid, you won this auction!
+</div>
+{% endif %}
+
+
+{% if success == 2 %}
+<div class="alert alert-warning" role="alert">
+  Your bid needs to be larger than the current bid!
+</div>
+
+{% elif success == 1 %}
+<div class="alert alert-success" role="alert">
+  Your bid has been placed!
+</div>
+{% elif success == 3 %}
+<div class="alert alert-success" role="alert">
+  Your auction has been closed!
+</div>
+{% endif %}
+
+
+
+
+
+<div id="item">
+    <h1>{{ list.title }}</h1>
+        <div class="card" style="width: 28rem; margin: 20px">
+            <div class="img">
+              <img class="card-img img-fluid" src="{{list.image}}" alt="Card image cap" id="img">
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">{{list.title}}</h5>
+              <p class="card-text">{{list.description}}</p>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">$ {{list.price}}</li>
+              <li class="list-group-item">{{list.category}}</li>
+            </ul>
+          </div>
+
+{% if user.is_authenticated %}
+<div id="watchlist">
+
+    {% if owner %}
+    <div id="close">
+      <form action="{% url 'close' item_id=list.id%}" method="POST" >
+        {% csrf_token %}
+        <button type="submit" class ="btn btn-outline-dark">Close Auction</button>
+      </form>
+    {% endif %}
+
+    {% if watchlist %}
+      <form action="{% url 'remove' id=list.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" style="margin-top: 10px" class ="btn btn-outline-dark">In watchlist</button>
+      </form>
+    </div>
+    {% else %}
+      <form action="{% url 'add' id=list.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class ="btn btn-dark">Add to watchlist</button>
+      </form>
+    {% endif %}
+</div>
+<!-- Bidding -->
+<div id="box">
+  <form action="{% url 'bid' item_id=list.id %}" method="POST">
+    {% csrf_token %}
+    <div>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-default">Bid</span>
+        </div>
+        <input type="number" class="form-control" required name="body" min="1" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+      </div>
+      <input type="submit" value="Submit Bid" id="comment">
+    </div>
+  </form>
+</div>
+
+
+<!-- Commenting -->
+<div id="box">
+    <form action="{% url 'addcomment' item_id=list.id %}" method="POST">
+      {% csrf_token %}
+      <div>
+        <textarea name="body" required placeholder="Add a comment"></textarea>
+        <br>
+        <input type="submit" value="Comment" id="comment">
+      </div>
+    </form>
+</div>
+
+<div id="post">
+{% for comment in comments %}
+
+  <div id="body">
+    {{ comment.owner }}
+    <p>{{ comment.body }}<p>
+  </div>
+
+{% endfor %}
+</div>
+
+</div>
+
+{% endif %}
+{% endblock %}
